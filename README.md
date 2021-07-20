@@ -1,5 +1,6 @@
 - do this tutorial: https://reactjs.org/tutorial/tutorial.html
 - while following along with this guide: https://reactjs.org/docs/hello-world.html
+- look at the commits for samples of basic actions: passing props, adding state, lifting state up, and using function components
 # JSX and Rendering
 ``` 
 function formatName(user) {
@@ -393,3 +394,48 @@ class Calculator extends React.Component {
 - There should be a single “source of truth” for any data that changes in a React application. This allows less room for bugs.
 - Usually, the state is first added to the component that needs it for rendering. Then, if other components also need it, you can lift it up to their closest common ancestor.
 - If something can be derived from either props or state, it probably shouldn’t be in the state.
+- three questions for figuring out if something is state:
+    - Is it passed in from a parent via props? If so, it probably isn’t state.
+    - Does it remain unchanged over time? If so, it probably isn’t state.
+    - Can you compute it based on any other state or props in your component? If so, it isn’t state.
+- For each piece of state in your application:
+    - Identify every component that renders something based on that state.
+    - Find a common owner component (a single component above all the components that need the state in the hierarchy).
+    - Either the common owner or another component higher up in the hierarchy should own the state.
+    - If you can’t find a component where it makes sense to own the state, create a new component solely for holding the state and add it somewhere in the hierarchy above the common owner component.
+# Containment
+- for components that don’t know their children ahead of time, the special children prop is recommended:
+```
+function FancyBorder(props) {
+  return (
+    <div className={'FancyBorder FancyBorder-' + props.color}>
+      {props.children}
+    </div>
+  );
+}
+
+function WelcomeDialog() {
+  return (
+    <FancyBorder color="blue">
+      <h1 className="Dialog-title">
+        Welcome
+      </h1>
+      <p className="Dialog-message">
+        Thank you for visiting our spacecraft!
+      </p>
+    </FancyBorder>
+  );
+}
+```
+- Props and composition give you all the flexibility you need to customize a component’s look and behavior in an explicit and safe way. If you want to reuse non-UI functionality between components, extracting it into a separate JavaScript module is recommended. The components may import it and use that function, object, or a class, without extending it.
+# Function Components
+- Function components are a simpler way to write components that only contain a render method and don’t have their own state. Instead of defining a class which extends React.Component, we can write a function that takes props as input and returns what should be rendered:
+```
+function Square(props) {
+  return (
+    <button className="square" onClick={props.onClick}>
+      {props.value}
+    </button>
+  );
+}
+```
